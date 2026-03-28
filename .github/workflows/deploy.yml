@@ -1,0 +1,31 @@
+name: Deploy to Docker Hub
+
+# Chạy quy trình này mỗi khi có code mới đẩy lên nhánh main
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest # Mượn máy ảo Ubuntu của GitHub
+
+    steps:
+      # Bước 1: Tải mã nguồn của bạn vào máy ảo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Bước 2: Đăng nhập vào Docker Hub bằng tài khoản đã lưu trong Secrets
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Bước 3: Build Image từ Dockerfile và Push lên Docker Hub
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Thay đổi 'ten-ung-dung-cua-ban' thành tên bạn muốn đặt cho image
+          tags: ${{ secrets.DOCKER_USERNAME }}/demo-spring-boot:latest
